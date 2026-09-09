@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  role          Role
+
+  patient       Patient?
+  doctor        Doctor?
+  notifications Notification[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Patient {
+  id            Int           @id @default(autoincrement())
+  userId        Int           @unique
+  nom           String
+  dateNaissance DateTime
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appointments  Appointment[]
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Doctor {
+  id            Int             @id @default(autoincrement())
+  userId        Int             @unique
+  nom           String
+  licence       String          @unique
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialties   DoctorSpecialty[]
+  availabilities Availability[]
+  appointments  Appointment[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Specialty {
+  id      Int              @id @default(autoincrement())
+  name    String           @unique
+
+  doctors DoctorSpecialty[]
+
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model DoctorSpecialty {
+  doctorId    Int
+  specialtyId Int
+
+  doctor      Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  specialty   Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade)
+
+  @@id([doctorId, specialtyId])
+}
+
+model Availability {
+  id           Int           @id @default(autoincrement())
+  doctorId     Int
+  start        DateTime
+  end          DateTime
+
+  doctor       Doctor        @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointment  Appointment?
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Appointment {
+  id             Int               @id @default(autoincrement())
+  patientId      Int
+  doctorId       Int
+  availabilityId Int               @unique
+  statut         AppointmentStatus @default(PENDING)
+
+  patient        Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor         Doctor            @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  availability  Availability      @relation(fields: [availabilityId], references: [id])
+  medicalRecord  MedicalRecord?
+
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model MedicalRecord {
+  id            Int         @id @default(autoincrement())
+  appointmentId Int         @unique
+  diagnostic    String
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String
+  lu        Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
