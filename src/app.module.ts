@@ -7,6 +7,10 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PatientsModule } from './patients/patients.module';
 import { SpecialtiesModule } from './specialties/specialties.module';
+import { MedecinsModule } from './medecins/medecins.module';
+import { AvailabilitiesModule } from './availabilities/availabilities.module';
+import { AppointmentModule } from './appointment/appointment.module';
+import { MedicalsRecordsModule } from './medicals-records/medicals-records.module';
 
 @Module({
   imports: [
@@ -16,6 +20,10 @@ import { SpecialtiesModule } from './specialties/specialties.module';
     AuthModule,
     PatientsModule,
     SpecialtiesModule,
+    MedecinsModule,
+    AvailabilitiesModule,
+    AppointmentModule,
+    MedicalsRecordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
