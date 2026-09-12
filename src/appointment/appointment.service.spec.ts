@@ -6,6 +6,7 @@ import { MedecinRepository } from '../medecins/repositories/medecin.repository';
 import { AvailabilityRepository } from '../availabilities/repositories/availability.repository';
 import { NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { AppointmentStatus } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('AppointmentService', () => {
   let service: AppointmentService;
@@ -37,6 +38,11 @@ describe('AppointmentService', () => {
       findOne: jest.fn(),
     };
 
+    const mockEventEmitter = {
+      emitAsync: jest.fn(),
+      emit: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AppointmentService,
@@ -44,6 +50,7 @@ describe('AppointmentService', () => {
         { provide: PatientRepository, useValue: mockPatientRepository },
         { provide: MedecinRepository, useValue: mockMedecinRepository },
         { provide: AvailabilityRepository, useValue: mockAvailabilityRepository },
+        { provide: EventEmitter2, useValue: mockEventEmitter },
       ],
     }).compile();
 
