@@ -11,7 +11,8 @@ import { AvailabilityRepository } from '../availabilities/repositories/availabil
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { FilterAppointmentDto } from './dto/filter-appointment.dto';
-
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { AppointmentCreatedEvent } from 'src/appointment/events/appointment-created.event';
 @Injectable()
 export class AppointmentService {
   constructor(
@@ -19,7 +20,8 @@ export class AppointmentService {
     private readonly patientRepository: PatientRepository,
     private readonly medecinRepository: MedecinRepository,
     private readonly availabilityRepository: AvailabilityRepository,
-  ) {}
+    private readonly eventEmitter: EventEmitter2,
+  ) { }
 
   private async findPatientById(id: number) {
     try {
@@ -58,7 +60,9 @@ export class AppointmentService {
       throw new ConflictException('Cette disponibilité est déjà réservée par un autre rendez-vous.');
     }
 
-    return this.appointmentRepository.create(createAppointmentDto);
+    const appointment = await this.appointmentRepository.create(createAppointmentDto);
+    this.eventEmitter.emitAsync("appointment.created", new AppointmentCreatedEvent(appointment));
+    return appointment;
   }
 
   async findAll() {
