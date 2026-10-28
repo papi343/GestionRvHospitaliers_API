@@ -28,9 +28,20 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
-    updateUserDto.password = hashedPassword;
-    const user = new User(id, updateUserDto.email, updateUserDto.password, updateUserDto.role, null, null, new Date(), new Date());
+    const current = await this.userRespository.getOneUser(id);
+    const hashedPassword = updateUserDto.password
+      ? await bcrypt.hash(updateUserDto.password, 10)
+      : current.password;
+    const user = new User(
+      id,
+      updateUserDto.email ?? current.email,
+      hashedPassword,
+      updateUserDto.role ?? current.role,
+      null,
+      null,
+      current.createdAt,
+      new Date(),
+    );
     return await this.userRespository.update(id, user);
   }
 

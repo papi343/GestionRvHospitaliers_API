@@ -7,10 +7,19 @@ import { PatientsModule } from '../patients/patients.module';
 import { MedecinsModule } from '../medecins/medecins.module';
 import { AvailabilitiesModule } from '../availabilities/availabilities.module';
 import { MailModule } from '../mail/mail.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { WebsocketModule } from '../websocket/websocket.module';
 import { AppointmentCreatedListener } from './events/listeners/appointment-created.listener';
 
 @Module({
-  imports: [PatientsModule, MedecinsModule, AvailabilitiesModule, MailModule],
+  imports: [
+    PatientsModule,
+    MedecinsModule,
+    AvailabilitiesModule,
+    MailModule,
+    NotificationsModule,
+    WebsocketModule,
+  ],
   controllers: [AppointmentController],
   providers: [
     AppointmentService,
