@@ -19,21 +19,25 @@ export class NotificationGateway implements OnGatewayConnection,
 
 
     handleConnection(client: Socket) {
-        const authHeader = client.handshake.auth.token;
-        const token = authHeader.split(' ')[1];
+        const authHeader = client.handshake.auth?.token || client.handshake.headers?.authorization;
+        if (!authHeader || typeof authHeader !== 'string') {
+            client.disconnect();
+            return;
+        }
+        const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : authHeader;
         if (!token) {
             client.disconnect();
+            return;
         }
 
         try {
             const decodedToken = this.jwtService.verify(token);
             const userId = decodedToken.sub;
-            client.rooms.add(`userId_${userId}`);
+            client.join(`userId_${userId}`);
             console.log(`user ${userId} connected`);
         } catch (error) {
             client.disconnect();
         }
-
     }
 
     handleDisconnect(client: Socket) {

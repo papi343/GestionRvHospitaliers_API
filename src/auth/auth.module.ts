@@ -5,11 +5,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '../users/users.module';
 import { PatientsModule } from '../patients/patients.module';
+import { MedecinsModule } from '../medecins/medecins.module';
 
 @Module({
   imports: [
     UsersModule,
     PatientsModule,
+    MedecinsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
