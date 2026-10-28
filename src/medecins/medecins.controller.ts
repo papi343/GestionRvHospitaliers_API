@@ -19,22 +19,23 @@ export class MedecinsController {
     return this.medecinsService.create(createMedecinDto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
   @Get()
   findAll() {
     return this.medecinsService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Get('user/:userId')
+  findByUserId(@Param('userId', ParseIntPipe) userId: number) {
+    return this.medecinsService.findByUserId(userId);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.medecinsService.findOne(id);
   }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.DOCTOR)
-
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateMedecinDto: UpdateMedecinDto) {
     return this.medecinsService.update(id, updateMedecinDto);

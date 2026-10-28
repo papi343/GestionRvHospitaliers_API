@@ -38,9 +38,10 @@ export class AppointmentCreatedListener {
                     message: `Votre rendez-vous #${appointment.id} a bien été enregistré.`,
                 });
 
-                this.mailService.sendMail(patient?.user?.email, 'Rdv enregistré', 'Rdv enregistré')
+                this.mailService
+                    .sendMail(patient?.user?.email, 'Rdv enregistré', 'Rdv enregistré')
+                    .catch((err) => this.logger.warn(`Mail skipped for patient: ${err.message}`));
                 this.notificationGateway.sendNotificationToUser(patient.userId, notification);
-
             }
 
             // Find doctor's userId
@@ -56,7 +57,9 @@ export class AppointmentCreatedListener {
                     userId: doctor.userId,
                     message: `Un nouveau rendez-vous #${appointment.id} vous a été attribué.`,
                 });
-                this.mailService.sendMail(doctor?.user?.email, 'Rdv enregistré', 'Rdv enregistré')
+                this.mailService
+                    .sendMail(doctor?.user?.email, 'Rdv enregistré', 'Rdv enregistré')
+                    .catch((err) => this.logger.warn(`Mail skipped for doctor: ${err.message}`));
                 this.notificationGateway.sendNotificationToUser(doctor.userId, notification);
             }
         } catch (error) {

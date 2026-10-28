@@ -33,6 +33,14 @@ export class MedecinsService {
     return medecin;
   }
 
+  async findByUserId(userId: number) {
+    const medecin = await this.medecinRepository.findByUserId(userId);
+    if (!medecin) {
+      throw new NotFoundException(`Médecin pour l'utilisateur #${userId} introuvable.`);
+    }
+    return medecin;
+  }
+
   async update(id: number, updateMedecinDto: UpdateMedecinDto) {
     await this.findOne(id);
 
